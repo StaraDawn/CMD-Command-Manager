@@ -11,6 +11,8 @@ class 命令管理:
         # 从配置文件加载命令历史
         self.命令历史列表 = 配置管理.加载命令历史()
         self.历史记录最大条数 = 100  # 历史记录最大保存条数
+        # 上次选择的分类，默认为"默认"
+        self.上次选择的分类 = "默认"
     
     def 刷新命令列表(self, 命令列表框, 当前分类="全部", 搜索关键词=""):
         """刷新常用命令列表框的显示"""
@@ -38,7 +40,7 @@ class 命令管理:
             if 分类匹配 and 搜索匹配:
                 命令列表框.insert("", "end", values=(命令项["名称"], 命令项["命令"], 命令项.get("分类", "默认")))
     
-    def 添加常用命令(self, 主窗口, 命令列表框=None):
+    def 添加常用命令(self, 主窗口, 命令列表框=None, 当前分类="全部", 搜索关键词=""):
         """添加新的常用命令"""
         # 创建添加命令窗口
         from tkinter import Toplevel, Label, Entry, Button, StringVar, ttk
@@ -72,7 +74,7 @@ class 命令管理:
         
         # 分类选择
         Label(添加窗口, text="命令分类：", font=("微软雅黑", 9)).pack(pady=(10, 2))
-        分类变量 = StringVar(value="默认")
+        分类变量 = StringVar(value=self.上次选择的分类)
         分类下拉框 = ttk.Combobox(添加窗口, textvariable=分类变量, font=("微软雅黑", 9), width=38)
         分类下拉框['values'] = self.命令分类列表
         分类下拉框.pack(pady=5)
@@ -97,12 +99,14 @@ class 命令管理:
             
             # 添加到列表并保存
             self.常用命令列表.append({"名称": 新名称, "命令": 新命令, "分类": 新分类})
+            # 更新上次选择的分类
+            self.上次选择的分类 = 新分类
             self.保存常用命令()
             添加窗口.destroy()
             messagebox.showinfo("成功", "常用命令添加成功！", parent=主窗口)
             # 刷新命令列表
             if 命令列表框:
-                self.刷新命令列表(命令列表框)
+                self.刷新命令列表(命令列表框, 当前分类, 搜索关键词)
         
         # 按钮
         按钮框架 = Label(添加窗口)
@@ -118,7 +122,7 @@ class 命令管理:
         添加窗口.grab_set()
         主窗口.wait_window(添加窗口)
     
-    def 编辑命令(self, 主窗口, 命令列表框, 选中索引=None, event=None):
+    def 编辑命令(self, 主窗口, 命令列表框, 选中索引=None, event=None, 当前分类="全部", 搜索关键词=""):
         """编辑命令"""
         # 如果没有提供索引，从选择中获取
         if 选中索引 is None:
@@ -200,7 +204,7 @@ class 命令管理:
             编辑窗口.destroy()
             messagebox.showinfo("成功", "命令编辑成功！", parent=主窗口)
             # 刷新命令列表
-            self.刷新命令列表(命令列表框)
+            self.刷新命令列表(命令列表框, 当前分类, 搜索关键词)
         
         # 按钮
         按钮框架 = Label(编辑窗口)
@@ -216,7 +220,7 @@ class 命令管理:
         编辑窗口.grab_set()
         主窗口.wait_window(编辑窗口)
     
-    def 删除常用命令(self, 主窗口, 命令列表框):
+    def 删除常用命令(self, 主窗口, 命令列表框, 当前分类="全部", 搜索关键词=""):
         """删除选中的常用命令"""
         选中项 = 命令列表框.selection()
         if not 选中项:
@@ -229,9 +233,9 @@ class 命令管理:
             self.保存常用命令()
             messagebox.showinfo("成功", "常用命令删除成功！", parent=主窗口)
             # 刷新命令列表
-            self.刷新命令列表(命令列表框)
+            self.刷新命令列表(命令列表框, 当前分类, 搜索关键词)
     
-    def 清空命令列表(self, 主窗口, 命令列表框=None):
+    def 清空命令列表(self, 主窗口, 命令列表框=None, 当前分类="全部", 搜索关键词=""):
         """清空所有常用命令"""
         if not self.常用命令列表:
             messagebox.showinfo("提示", "常用命令列表已为空！", parent=主窗口)
@@ -243,7 +247,7 @@ class 命令管理:
             messagebox.showinfo("成功", "常用命令列表已清空！", parent=主窗口)
             # 刷新命令列表
             if 命令列表框:
-                self.刷新命令列表(命令列表框)
+                self.刷新命令列表(命令列表框, 当前分类, 搜索关键词)
     
     def 管理分类(self, 主窗口, 分类下拉框):
         """管理命令分类"""
@@ -526,7 +530,7 @@ class 命令管理:
         分类框架.config(yscrollcommand=滚动条.set)
         
         分类变量 = StringVar()
-        分类变量.set("默认")
+        分类变量.set(self.上次选择的分类)
         
         for 分类 in self.命令分类列表:
             分类选项 = Radiobutton(
@@ -546,6 +550,8 @@ class 命令管理:
             
             # 保存
             self.常用命令列表.append({"名称": 命令名称, "命令": 命令内容, "分类": 选择的分类})
+            # 更新上次选择的分类
+            self.上次选择的分类 = 选择的分类
             self.保存常用命令()
             messagebox.showinfo("成功", "当前命令已保存到常用！", parent=主窗口)
         
