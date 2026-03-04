@@ -124,25 +124,25 @@ class 主窗口:
         
         self.添加命令按钮 = tk.Button(
             self.管理按钮框架, text="添加常用命令", font=("微软雅黑", 9),
-            command=lambda: self.命令管理器.添加常用命令(self.主窗口, self.命令列表框), width=12
+            command=lambda: self.命令管理器.添加常用命令(self.主窗口, self.命令列表框, self.分类变量.get(), self.搜索变量.get()), width=12
         )
         self.添加命令按钮.grid(row=0, column=0, padx=2, pady=2)
         
         self.编辑命令按钮 = tk.Button(
             self.管理按钮框架, text="编辑命令", font=("微软雅黑", 9),
-            command=lambda: self.命令管理器.编辑命令(self.主窗口, self.命令列表框), width=12
+            command=lambda: self.命令管理器.编辑命令(self.主窗口, self.命令列表框, 当前分类=self.分类变量.get(), 搜索关键词=self.搜索变量.get()), width=12
         )
         self.编辑命令按钮.grid(row=0, column=1, padx=2, pady=2)
         
         self.删除命令按钮 = tk.Button(
             self.管理按钮框架, text="删除命令", font=("微软雅黑", 9),
-            command=lambda: self.命令管理器.删除常用命令(self.主窗口, self.命令列表框), width=12
+            command=lambda: self.命令管理器.删除常用命令(self.主窗口, self.命令列表框, self.分类变量.get(), self.搜索变量.get()), width=12
         )
         self.删除命令按钮.grid(row=1, column=0, padx=2, pady=2)
         
         self.清空列表按钮 = tk.Button(
             self.管理按钮框架, text="清空列表", font=("微软雅黑", 9),
-            command=lambda: self.命令管理器.清空命令列表(self.主窗口, self.命令列表框), width=12
+            command=lambda: self.命令管理器.清空命令列表(self.主窗口, self.命令列表框, self.分类变量.get(), self.搜索变量.get()), width=12
         )
         self.清空列表按钮.grid(row=1, column=1, padx=2, pady=2)
         
@@ -286,7 +286,7 @@ class 主窗口:
         # 搜索输入框回车事件
         self.搜索输入框.bind("<Return>", lambda event: self.刷新命令列表框())
         # 双击列表项编辑命令
-        self.命令列表框.bind("<Double-1>", lambda event: self.命令管理器.编辑命令(self.主窗口, self.命令列表框, event=event))
+        self.命令列表框.bind("<Double-1>", lambda event: self.命令管理器.编辑命令(self.主窗口, self.命令列表框, event=event, 当前分类=self.分类变量.get(), 搜索关键词=self.搜索变量.get()))
         # 单击列表项显示到右侧
         self.命令列表框.bind("<Button-1>", lambda event: self.命令管理器.显示命令到右侧(self.命令列表框, self.命令输入框, self.命令名称显示, event))
         # 命令输入框回车执行命令
@@ -316,16 +316,16 @@ class 主窗口:
         self.主窗口.bind("<Control-H>", lambda event: self.命令管理器.清空命令历史(self.主窗口))
         
         # 添加常用命令 - Ctrl+N
-        self.主窗口.bind("<Control-n>", lambda event: self.命令管理器.添加常用命令(self.主窗口, self.命令列表框))
+        self.主窗口.bind("<Control-n>", lambda event: self.命令管理器.添加常用命令(self.主窗口, self.命令列表框, self.分类变量.get(), self.搜索变量.get()))
         
         # 编辑常用命令 - Ctrl+E
-        self.主窗口.bind("<Control-e>", lambda event: self.命令管理器.编辑命令(self.主窗口, self.命令列表框))
+        self.主窗口.bind("<Control-e>", lambda event: self.命令管理器.编辑命令(self.主窗口, self.命令列表框, 当前分类=self.分类变量.get(), 搜索关键词=self.搜索变量.get()))
         
         # 删除常用命令 - Delete
-        self.命令列表框.bind("<Delete>", lambda event: self.命令管理器.删除常用命令(self.主窗口, self.命令列表框))
+        self.命令列表框.bind("<Delete>", lambda event: self.命令管理器.删除常用命令(self.主窗口, self.命令列表框, self.分类变量.get(), self.搜索变量.get()))
         
         # 清空命令列表 - Ctrl+Shift+L
-        self.主窗口.bind("<Control-L>", lambda event: self.命令管理器.清空命令列表(self.主窗口, self.命令列表框))
+        self.主窗口.bind("<Control-L>", lambda event: self.命令管理器.清空命令列表(self.主窗口, self.命令列表框, self.分类变量.get(), self.搜索变量.get()))
         
         # 管理分类 - Ctrl+M
         self.主窗口.bind("<Control-m>", lambda event: self.命令管理器.管理分类(self.主窗口, self.分类下拉框))
