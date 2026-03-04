@@ -607,19 +607,12 @@ class 命令管理:
                 "输出": 输出内容 or ""
             }
             
-            # 检查是否已存在相同命令的历史记录
-            已存在 = False
-            for 项 in self.命令历史列表:
-                if isinstance(项, dict) and 项.get("命令") == 命令:
-                    已存在 = True
-                    break
-            
-            if not 已存在:
-                self.命令历史列表.append(历史记录项)
-                # 限制历史记录条数
-                if len(self.命令历史列表) > self.历史记录最大条数:
-                    self.命令历史列表 = self.命令历史列表[-self.历史记录最大条数:]
-                self.保存命令历史()
+            # 直接添加到历史记录，允许重复命令
+            self.命令历史列表.append(历史记录项)
+            # 限制历史记录条数
+            if len(self.命令历史列表) > self.历史记录最大条数:
+                self.命令历史列表 = self.命令历史列表[-self.历史记录最大条数:]
+            self.保存命令历史()
     
     def 显示历史记录(self, 主窗口, 命令输入框):
         """显示命令历史记录"""
